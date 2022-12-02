@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ProductService {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public void createProduct(ProductRequest productRequest) {
         Product product = Product.builder()
