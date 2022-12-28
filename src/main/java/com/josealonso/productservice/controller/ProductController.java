@@ -1,5 +1,6 @@
 package com.josealonso.productservice.controller;
 
+import com.josealonso.productservice.dto.ProductRequest;
 import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -29,19 +30,29 @@ public class ProductController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<HttpHeaders> createProduct(@RequestBody ProductResponse productResponse) {
         ProductResponse savedProduct = productService.createProduct(productResponse);
 
         HttpHeaders headers = new HttpHeaders();
         // TODO add hostname to url
-        headers.add("Location", "/api/v1/product"+ savedProduct.getId());
+        headers.add("Location", "/api/v1/product" + savedProduct.getId());
 
         return new ResponseEntity<HttpHeaders>(headers, HttpStatus.CREATED);
     }
 
-}
+    @PutMapping({"/productId"})
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateProduct(@PathVariable("productId") String productId, @RequestBody ProductRequest productRequest) {
+        productService.updateProduct(productId, productRequest);
+    }
 
+    @DeleteMapping({"/productId"})
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable("productId") String productId) {
+        productService.deleteProductById(productId);
+    }
+
+}
 
 
 
