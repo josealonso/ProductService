@@ -25,7 +25,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable("productId") String productId) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable("productId") String productId) {
         return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
     }
 
@@ -42,11 +42,11 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-        public void updateProduct(@PathVariable("productId") String productId, @RequestBody ProductRequest productRequest) {
+    public void updateProduct(@PathVariable("productId") String productId, @RequestBody ProductRequest productRequest) {
         productService.updateProduct(productId, productRequest);
     }
 
-    @DeleteMapping({"/productId"})
+    @DeleteMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable("productId") String productId) {
         productService.deleteProductById(productId);

@@ -16,6 +16,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class ProductRequest {
     private Integer apiVersion;
+    private String id;
     private String name;
     private String description;
     private BigDecimal price;
