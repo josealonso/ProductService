@@ -24,7 +24,7 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping({"/productId"})
+    @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable("productId") String productId) {
         return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
     }
@@ -40,9 +40,9 @@ public class ProductController {
         return new ResponseEntity<HttpHeaders>(headers, HttpStatus.CREATED);
     }
 
-    @PutMapping({"/productId"})
+    @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateProduct(@PathVariable("productId") String productId, @RequestBody ProductRequest productRequest) {
+        public void updateProduct(@PathVariable("productId") String productId, @RequestBody ProductRequest productRequest) {
         productService.updateProduct(productId, productRequest);
     }
 
