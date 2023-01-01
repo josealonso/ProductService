@@ -3,6 +3,7 @@ package com.josealonso.productservice.controller;
 import com.josealonso.productservice.dto.ProductRequest;
 import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpHeaders> createProduct(@RequestBody ProductResponse productResponse) {
+    public ResponseEntity<HttpHeaders> createProduct(@Valid @RequestBody ProductResponse productResponse) {
         ProductResponse savedProduct = productService.createProduct(productResponse);
 
         HttpHeaders headers = new HttpHeaders();
@@ -43,7 +44,7 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateProduct(@PathVariable("productId") UUID productId, @RequestBody ProductRequest productRequest) {
+    public void updateProduct(@PathVariable("productId") UUID productId, @Valid @RequestBody ProductRequest productRequest) {
         productService.updateProductById(productId, productRequest);
     }
 

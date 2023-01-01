@@ -1,14 +1,13 @@
 package com.josealonso.productservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -16,13 +15,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductRequest {
-    private Integer apiVersion;
+    @Null
     private UUID id;
-    private String name;
-    private String description;
-    private BigDecimal price;
 
-    private OffsetDateTime createdDate;
-    private OffsetDateTime lastModifiedDate;
+    @NotBlank
+    private String name;
+
+    @NotBlank
+    private String style;
+
+    @Positive
+    private Long upc;
 
 }
