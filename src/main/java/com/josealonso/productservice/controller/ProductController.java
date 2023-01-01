@@ -5,16 +5,19 @@ import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.service.ProductService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/product")
 @RequiredArgsConstructor
@@ -29,12 +32,12 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable("productId") UUID productId) {
+    public ResponseEntity<ProductResponse> getProductById(@NotNull @PathVariable("productId") UUID productId) {
         return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<HttpHeaders> createProduct(@Valid @RequestBody ProductResponse productResponse) {
+    public ResponseEntity<HttpHeaders> createProduct(@Valid @NotNull @RequestBody ProductResponse productResponse) {
         ProductResponse savedProduct = productService.createProduct(productResponse);
 
         HttpHeaders headers = new HttpHeaders();
