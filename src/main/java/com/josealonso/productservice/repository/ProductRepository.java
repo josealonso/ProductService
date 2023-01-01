@@ -1,7 +1,11 @@
 package com.josealonso.productservice.repository;
 
-import com.josealonso.productservice.model.Product;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import com.josealonso.productservice.domain.Product;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ProductRepository extends MongoRepository<Product, String> {
+import java.util.UUID;
+
+@Repository     // optional annotation
+public interface ProductRepository extends PagingAndSortingRepository<Product, UUID> {
 }
