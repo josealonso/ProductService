@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductControllerTest {
 
     final String ENDPOINT = "/api/v1/product";
-    static final String PRODUCT_ID = "My Product";
+    static final UUID PRODUCT_ID = UUID.randomUUID();
     static ProductResponse productResponse;
     @Autowired
     MockMvc mockMvc;
@@ -73,9 +74,9 @@ class ProductControllerTest {
 
     @Test
     void updateProductById() throws Exception {
-        ProductResponse updatedProduct = ProductResponse.builder().id("ONE").build();
+        ProductResponse updatedProduct = ProductResponse.builder().id(PRODUCT_ID).build();
         String updatedProductInJson = objectMapper.writeValueAsString(updatedProduct);
-        /*Mockito.when(productService.updateProduct(updatedProduct.getId(), convertToProductRequest(updatedProduct))
+        /*Mockito.when(productService.updateProductById(updatedProduct.getId(), convertToProductRequest(updatedProduct))
                 .thenReturn();*/
 
         mockMvc.perform(put(ENDPOINT + "/" + PRODUCT_ID)
@@ -86,7 +87,7 @@ class ProductControllerTest {
 
     @Test
     void deleteProduct() throws Exception {
-        ProductRequest productToBeDeleted = ProductRequest.builder().id("ONE").build();
+        ProductRequest productToBeDeleted = ProductRequest.builder().id(PRODUCT_ID).build();
         String productToBeDeletedInJson = objectMapper.writeValueAsString(productToBeDeleted);
 
         mockMvc.perform(delete(ENDPOINT + "/" + PRODUCT_ID)

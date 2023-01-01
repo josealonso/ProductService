@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,7 +17,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class ProductRequest {
     private Integer apiVersion;
-    private String id;
+    private UUID id;
     private String name;
     private String description;
     private BigDecimal price;
