@@ -3,6 +3,7 @@ package com.josealonso.productservice.controller;
 import com.josealonso.productservice.dto.ProductRequest;
 import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.service.ProductService;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,6 +54,16 @@ public class ProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable("productId") UUID productId) {
         productService.deleteProductById(productId);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<List<String>> validationErrorHandler(ConstraintViolationException e) {
+        List<String> errors = new ArrayList<>(e.getConstraintViolations().size());
+
+        e.getConstraintViolations().forEach(constraintViolation -> {
+            errors.add(constraintViolation.getPropertyPath() + " : " + constraintViolation.getMessage());
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
 }
