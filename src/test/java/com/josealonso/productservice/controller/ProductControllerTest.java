@@ -55,14 +55,14 @@ class ProductControllerTest {
     void getProductById() throws Exception {
         Mockito.when(productService.getProductById(PRODUCT_ID)).thenReturn(productResponse);
 
-        mockMvc.perform(get(ENDPOINT + "/" + PRODUCT_ID)  // UUID.randomUUID().toString())
+        mockMvc.perform(get(ENDPOINT + "/" + PRODUCT_ID)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void createProduct() throws Exception {
-        ProductResponse newProduct = ProductResponse.builder().build();
+        ProductResponse newProduct = getValidProductResponse();
         String newProductInJson = objectMapper.writeValueAsString(newProduct);
         Mockito.when(productService.createProduct(newProduct)).thenReturn(newProduct);
 
@@ -74,7 +74,7 @@ class ProductControllerTest {
 
     @Test
     void updateProductById() throws Exception {
-        ProductResponse updatedProduct = ProductResponse.builder().id(PRODUCT_ID).build();
+        ProductResponse updatedProduct = getValidProductResponse();
         String updatedProductInJson = objectMapper.writeValueAsString(updatedProduct);
         /*Mockito.when(productService.updateProductById(updatedProduct.getId(), convertToProductRequest(updatedProduct))
                 .thenReturn();*/
@@ -96,10 +96,27 @@ class ProductControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    ProductResponse getValidProductResponse() {
+        return ProductResponse.builder()
+                .name("My product")
+                .style("Book")
+                .price(new BigDecimal("2.99"))
+                .upc(123123123L)
+                .build();
+    }
+
+    ProductRequest getValidProductRequest() {
+        return ProductRequest.builder()
+                .name("My product")
+                .style("Book")
+                .price(new BigDecimal("2.99"))
+                .upc(123123123L)
+                .build();
+    }
     ProductRequest convertToProductRequest(ProductResponse productResponse) {
         return ProductRequest.builder()
                 .name(productResponse.getName())
-                .description(productResponse.getDescription())
+                .style(productResponse.getStyle())
                 .price(productResponse.getPrice())
                 .build();
     }

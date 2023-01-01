@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -29,13 +30,11 @@ public class ProductRequest {
 
     @NotBlank
     private String name;
-
     @NotNull
     private String style;
-
     @Positive
     @NotNull
     private Long upc;
-
+    private BigDecimal price;
     private Integer quantity;
 }

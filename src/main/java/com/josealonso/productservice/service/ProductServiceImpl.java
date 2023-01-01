@@ -22,7 +22,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse createProduct(ProductResponse productRequest) {
         Product product = Product.builder()
                 .productName(productRequest.getName())
-                .productStyle(productRequest.getDescription())
+                .productStyle(productRequest.getStyle())
                 .price(productRequest.getPrice())
                 .build();
         productRepository.save(product);
@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getProductName())
-                .description(product.getProductStyle())
+                .style(product.getProductStyle())
                 .price(product.getPrice())
                 .build();
     }
