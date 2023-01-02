@@ -9,6 +9,7 @@ import com.josealonso.productservice.service.ProductService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+// import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -17,20 +18,26 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.constraints.ConstraintDescriptions;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+// import static jdk.internal.org.jline.keymap.KeyMap.key;
+// import static java.util.TreeMap.key;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -111,21 +118,23 @@ class ProductControllerTest {
         // Mockito.when(productService.createProduct(newProduct)).thenReturn(newProduct);
         // given(productRepository.save(new Product())).willReturn(new Product());
 
+        ConstrainedFields fields = new ConstrainedFields(ProductResponse.class);
+
         mockMvc.perform(post(ENDPOINT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newProductInJson))
                 .andExpect(status().isCreated())
                 .andDo(document("v1/product",
                         requestFields(
-                                fieldWithPath("id").ignored(),
-                                fieldWithPath("version").ignored(),
-                                fieldWithPath("createdDate").ignored(),
-                                fieldWithPath("lastModifiedDate").ignored(),
-                                fieldWithPath("name").description("Product Name"),
-                                fieldWithPath("style").description("Product Style"),
-                                fieldWithPath("upc").description("UPC of Product").attributes(),
-                                fieldWithPath("price").description("Price"),
-                                fieldWithPath("quantity").description("Quantity")
+                                fields.withPath("id").ignored(),
+                                fields.withPath("version").ignored(),
+                                fields.withPath("createdDate").ignored(),
+                                fields.withPath("lastModifiedDate").ignored(),
+                                fields.withPath("name").description("Product Name"),
+                                fields.withPath("style").description("Product Style"),
+                                fields.withPath("upc").description("UPC of Product").attributes(),
+                                fields.withPath("price").description("Price"),
+                                fields.withPath("quantity").description("Quantity")
                         )));
     }
 
@@ -188,5 +197,20 @@ class ProductControllerTest {
                 .style(productResponse.getStyle())
                 .price(productResponse.getPrice())
                 .build();
+    }
+
+    private static class ConstrainedFields {
+
+        private final ConstraintDescriptions constraintDescriptions;
+
+        public ConstrainedFields(Class<?> input) {
+            this.constraintDescriptions = new ConstraintDescriptions(input);
+        }
+
+        private FieldDescriptor withPath(String path) {
+            return fieldWithPath(path).attributes(key("constraints").value(StringUtils
+                    .collectionToDelimitedString(this.constraintDescriptions
+                            .descriptionsForProperty(path), ", ")));
+        }
     }
 }

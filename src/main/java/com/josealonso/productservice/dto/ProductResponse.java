@@ -1,9 +1,6 @@
 package com.josealonso.productservice.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +26,7 @@ public class ProductResponse {
     private OffsetDateTime lastModifiedDate;
 
     @NotBlank
+    @Size(min = 3, max = 100)
     private String name;
     @NotNull
     private String style;
@@ -36,5 +34,6 @@ public class ProductResponse {
     @NotNull
     private Long upc;
     private BigDecimal price;
+    @Positive
     private Integer quantity;
 }
