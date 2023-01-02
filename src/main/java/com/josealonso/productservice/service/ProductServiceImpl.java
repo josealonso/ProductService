@@ -19,11 +19,11 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductResponse createProduct(ProductResponse productRequest) {
+    public ProductResponse createProduct(ProductResponse productResponse) {
         Product product = Product.builder()
-                .productName(productRequest.getName())
-                .productStyle(productRequest.getStyle())
-                .price(productRequest.getPrice())
+                .productName(productResponse.getName())
+                .productStyle(productResponse.getStyle())
+                .price(productResponse.getPrice())
                 .build();
         productRepository.save(product);
         log.info("Product {} has been saved", product.getId());

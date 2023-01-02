@@ -29,8 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ComponentScan(basePackages = "com.josealonso.productservice.mappers")
 class ProductControllerTest {
 
-    static final String PRODUCT_ID = "a15d1a05-ff1a-4cc9-ac95-864fd820e530";    //UUID.randomUUID();
+    static final String PRODUCT_ID = "a15d1a05-ff1a-4cc9-ac95-864fd820e530";
     static ProductResponse productResponse;
     final String ENDPOINT = "/api/v1/product";
     @Autowired
@@ -108,14 +107,26 @@ class ProductControllerTest {
     @Test
     void createProduct() throws Exception {
         ProductResponse newProduct = getValidProductResponse();
-        newProduct.setId(UUID.fromString(PRODUCT_ID));
         String newProductInJson = objectMapper.writeValueAsString(newProduct);
-//        Mockito.when(productService.createProduct(newProduct)).thenReturn(newProduct);
+        // Mockito.when(productService.createProduct(newProduct)).thenReturn(newProduct);
+        // given(productRepository.save(new Product())).willReturn(new Product());
 
         mockMvc.perform(post(ENDPOINT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newProductInJson))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(document("v1/product",
+                        requestFields(
+                                fieldWithPath("id").ignored(),
+                                fieldWithPath("version").ignored(),
+                                fieldWithPath("createdDate").ignored(),
+                                fieldWithPath("lastModifiedDate").ignored(),
+                                fieldWithPath("name").description("Product Name"),
+                                fieldWithPath("style").description("Product Style"),
+                                fieldWithPath("upc").description("UPC of Product").attributes(),
+                                fieldWithPath("price").description("Price"),
+                                fieldWithPath("quantity").description("Quantity")
+                        )));
     }
 
     @Test
@@ -144,11 +155,12 @@ class ProductControllerTest {
 
     ProductResponse getValidProductResponse() {
         return ProductResponse.builder()
-                // .id(UUID.fromString("PRODUCT_ID"))
+                .id(UUID.fromString(PRODUCT_ID))
                 .name("My product")
                 .style("Book")
                 .price(new BigDecimal("2.99"))
                 .upc(123123123L)
+                .quantity(23)
                 .build();
     }
 
