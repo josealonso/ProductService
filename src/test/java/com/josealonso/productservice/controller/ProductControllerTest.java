@@ -75,9 +75,10 @@ class ProductControllerTest {
         // Mockito.when(productService.getProductById(PRODUCT_ID)).thenReturn(productResponse);
         given(productRepository.findById(any())).willReturn(Optional.of(getValidProduct()));
 
-        mockMvc.perform(get(ENDPOINT + "/{productId}").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(ENDPOINT + "/{productId}", PRODUCT_ID)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("/v1/product", pathParameters(
+                .andDo(document("v1/product", pathParameters(
                         parameterWithName("productId").description("UUID of the desired product to get.")
                 )));
     }
@@ -85,6 +86,7 @@ class ProductControllerTest {
     @Test
     void createProduct() throws Exception {
         ProductResponse newProduct = getValidProductResponse();
+        newProduct.setId(PRODUCT_ID);
         String newProductInJson = objectMapper.writeValueAsString(newProduct);
 //        Mockito.when(productService.createProduct(newProduct)).thenReturn(newProduct);
 
