@@ -29,6 +29,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ComponentScan(basePackages = "com.josealonso.productservice.mappers")
 class ProductControllerTest {
 
-    static final UUID PRODUCT_ID = UUID.randomUUID();
+    static final String PRODUCT_ID = "a15d1a05-ff1a-4cc9-ac95-864fd820e530";    //UUID.randomUUID();
     static ProductResponse productResponse;
     final String ENDPOINT = "/api/v1/product";
     @Autowired
@@ -56,7 +58,11 @@ class ProductControllerTest {
     @BeforeAll
     static void setup() {
         productResponse = ProductResponse.builder()
-                .id(PRODUCT_ID).name("pencil").price(BigDecimal.valueOf(200))
+                .id(UUID.fromString(PRODUCT_ID))
+                .name("pencil")
+                .style("School Material")
+                .upc(24536L)
+                .price(BigDecimal.valueOf(200))
                 .build();
     }
 
@@ -72,7 +78,7 @@ class ProductControllerTest {
 
     @Test
     void getProductById() throws Exception {
-        // Mockito.when(productService.getProductById(PRODUCT_ID)).thenReturn(productResponse);
+        Mockito.when(productService.getProductById(UUID.fromString(PRODUCT_ID))).thenReturn(productResponse);
         given(productRepository.findById(any())).willReturn(Optional.of(getValidProduct()));
 
         mockMvc.perform(get(ENDPOINT + "/{productId}", PRODUCT_ID)
@@ -85,13 +91,24 @@ class ProductControllerTest {
                         ),
                         queryParameters(
                                 parameterWithName("isInDiscount").description("Is in discount query param")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("Id of Product"),
+                                fieldWithPath("version").description("Version number"),
+                                fieldWithPath("createdDate").description("Date Created"),
+                                fieldWithPath("lastModifiedDate").description("Date Updated"),
+                                fieldWithPath("name").description("Product Name"),
+                                fieldWithPath("style").description("Product Style"),
+                                fieldWithPath("upc").description("UPC of Product"),
+                                fieldWithPath("price").description("Price"),
+                                fieldWithPath("quantity").description("Quantity")
                         )));
     }
 
     @Test
     void createProduct() throws Exception {
         ProductResponse newProduct = getValidProductResponse();
-        newProduct.setId(PRODUCT_ID);
+        newProduct.setId(UUID.fromString(PRODUCT_ID));
         String newProductInJson = objectMapper.writeValueAsString(newProduct);
 //        Mockito.when(productService.createProduct(newProduct)).thenReturn(newProduct);
 
@@ -116,7 +133,7 @@ class ProductControllerTest {
 
     @Test
     void deleteProduct() throws Exception {
-        ProductRequest productToBeDeleted = ProductRequest.builder().id(PRODUCT_ID).build();
+        ProductRequest productToBeDeleted = ProductRequest.builder().id(UUID.fromString(PRODUCT_ID)).build();
         String productToBeDeletedInJson = objectMapper.writeValueAsString(productToBeDeleted);
 
         mockMvc.perform(delete(ENDPOINT + "/" + PRODUCT_ID)
@@ -127,6 +144,7 @@ class ProductControllerTest {
 
     ProductResponse getValidProductResponse() {
         return ProductResponse.builder()
+                // .id(UUID.fromString("PRODUCT_ID"))
                 .name("My product")
                 .style("Book")
                 .price(new BigDecimal("2.99"))
@@ -145,7 +163,7 @@ class ProductControllerTest {
 
     Product getValidProduct() {
         return Product.builder()
-                .id(PRODUCT_ID)
+                .id(UUID.fromString(PRODUCT_ID))
                 //.style("Book")
                 .price(new BigDecimal("2.99"))
                 .upc(123123123L)
