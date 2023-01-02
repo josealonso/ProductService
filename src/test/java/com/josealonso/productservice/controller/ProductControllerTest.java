@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -28,8 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -76,11 +76,16 @@ class ProductControllerTest {
         given(productRepository.findById(any())).willReturn(Optional.of(getValidProduct()));
 
         mockMvc.perform(get(ENDPOINT + "/{productId}", PRODUCT_ID)
+                        .param("isInDiscount", "yes")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("v1/product", pathParameters(
-                        parameterWithName("productId").description("UUID of the desired product to get.")
-                )));
+                .andDo(document("v1/product",
+                        pathParameters(
+                                parameterWithName("productId").description("UUID of the desired product to get.")
+                        ),
+                        queryParameters(
+                                parameterWithName("isInDiscount").description("Is in discount query param")
+                        )));
     }
 
     @Test
