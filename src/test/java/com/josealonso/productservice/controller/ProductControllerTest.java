@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith(RestDocumentationExtension.class)
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "com.josealonso", uriPort = 80)
 @WebMvcTest(ProductController.class)
 @ComponentScan(basePackages = "com.josealonso.productservice.mappers")
 class ProductControllerTest {
