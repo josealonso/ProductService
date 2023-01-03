@@ -1,20 +1,19 @@
 package com.josealonso.productservice.service;
 
-import com.josealonso.productservice.dto.ProductRequest;
-import com.josealonso.productservice.dto.ProductResponse;
+import com.josealonso.productservice.dto.ProductDto;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
 
-    List<ProductResponse> getAllProducts();
+    List<ProductDto> getAllProducts();
 
-    ProductResponse createProduct(ProductResponse productResponse);
+    ProductDto getProductById(UUID uuid);
 
-    void updateProductById(UUID productId, ProductRequest productRequest);
+    ProductDto createProduct(ProductDto productDto);
 
-    ProductResponse getProductById(UUID uuid);
+    ProductDto updateProductById(UUID productId, ProductDto productDto);
 
     void deleteProductById(UUID productId);
 }

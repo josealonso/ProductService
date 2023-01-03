@@ -1,8 +1,11 @@
 package com.josealonso.productservice.service;
 
+import com.josealonso.productservice.controller.NotFoundException;
+import com.josealonso.productservice.dto.ProductDto;
 import com.josealonso.productservice.dto.ProductRequest;
 import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.domain.Product;
+import com.josealonso.productservice.mappers.ProductMapper;
 import com.josealonso.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,47 +19,47 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductServiceImpl implements ProductService {
-
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    public ProductResponse createProduct(ProductResponse productResponse) {
-        Product product = Product.builder()
-                .productName(productResponse.getName())
-                .productStyle(productResponse.getStyle())
-                .price(productResponse.getPrice())
-                .build();
-        productRepository.save(product);
-        log.info("Product {} has been saved", product.getId());
-        return mapToProductResponse(product);
-    }
-
-    public List<ProductResponse> getAllProducts() {
+    @Override
+    public List<ProductDto> getAllProducts() {
         var products = productRepository.findAll();
         return products.stream()
-                .map(this::mapToProductResponse)
+                .map(productMapper::productToProductDto)
                 .collect(Collectors.toList());
     }
 
-    private ProductResponse mapToProductResponse(Product product) {
-        return ProductResponse.builder()
-                .id(product.getId())
-                .name(product.getProductName())
-                .style(product.getProductStyle())
-                .price(product.getPrice())
-                .build();
+    @Override
+    public ProductDto getProductById(UUID uuid) {
+        var product = productRepository.findById(uuid).orElseThrow(NotFoundException::new);
+        return productMapper.productToProductDto(product);
     }
 
     @Override
-    public ProductResponse getProductById(UUID uuid) {
-        var product = productRepository.findById(uuid).orElseThrow();
-        return mapToProductResponse(product);
+    public ProductDto createProduct(ProductDto productDto) {
+        Product product = productMapper.productDtoToProduct(productDto);
+        productRepository.save(product);
+        log.info("Product {} has been saved", product.getId());
+        return productMapper.productToProductDto(product);
+    }
+
+    @Override
+    public ProductDto updateProductById(UUID productId, ProductDto productDto) {
+        Product productToBeUpdated = productRepository.findById(productId).orElseThrow(NotFoundException::new);
+
+        productToBeUpdated.setProductName(productDto.getName());
+        productToBeUpdated.setProductStyle(productDto.getStyle());
+        productToBeUpdated.setPrice(productDto.getPrice());
+        productToBeUpdated.setUpc(productDto.getUpc());
+
+        return productMapper.productToProductDto(productRepository.save(productToBeUpdated));
     }
 
     @Override
     public void deleteProductById(UUID productId) {
+        Product productToBeDeleted = productRepository.findById(productId).orElseThrow(NotFoundException::new);
+        productRepository.delete(productToBeDeleted);
     }
 
-    @Override
-    public void updateProductById(UUID productId, ProductRequest productRequest) {
-    }
 }

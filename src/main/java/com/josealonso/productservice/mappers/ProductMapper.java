@@ -1,12 +1,12 @@
 package com.josealonso.productservice.mappers;
 
 import com.josealonso.productservice.domain.Product;
-import com.josealonso.productservice.dto.ProductRequest;
+import com.josealonso.productservice.dto.ProductDto;
 import org.mapstruct.Mapper;
 
 @Mapper(uses = {DateMapper.class})
 public interface ProductMapper {
-    ProductRequest productToProductRequest(Product product);
+    ProductDto productToProductDto(Product product);
 
-    Product productRequestToProduct(ProductRequest productRequest);
+    Product productDtoToProduct(ProductDto productDto);
 }

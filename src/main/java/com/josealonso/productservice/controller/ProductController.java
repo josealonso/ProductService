@@ -1,5 +1,6 @@
 package com.josealonso.productservice.controller;
 
+import com.josealonso.productservice.dto.ProductDto;
 import com.josealonso.productservice.dto.ProductRequest;
 import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.service.ProductService;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,37 +27,30 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/products")
-    @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponse> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponse> getProductById(@NotNull @PathVariable("productId") UUID productId) {
-        return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
+    public ResponseEntity<ProductDto> getProductById(@NotNull @PathVariable("productId") UUID productId) {
+        return new ResponseEntity<ProductDto>(productService.getProductById(productId), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<HttpHeaders> createProduct(@Valid @NotNull @RequestBody ProductResponse productResponse) {
-        ProductResponse savedProduct = productService.createProduct(productResponse);
-
-        HttpHeaders headers = new HttpHeaders();
-        // TODO add hostname to url
-        headers.add("Location", "/api/v1/product" + savedProduct.getId());
-
-        return new ResponseEntity<HttpHeaders>(headers, HttpStatus.CREATED);
+    public ResponseEntity createProduct(@Valid @NotNull @RequestBody ProductDto productDto) {
+        return new ResponseEntity<>(productService.createProduct(productDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{productId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateProduct(@PathVariable("productId") UUID productId, @Valid @RequestBody ProductRequest productRequest) {
-        productService.updateProductById(productId, productRequest);
+    public ResponseEntity updateProduct(@PathVariable("productId") UUID productId, @Valid @RequestBody ProductDto productDto) {
+        return new ResponseEntity<>(productService.updateProductById(productId, productDto), HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProduct(@PathVariable("productId") UUID productId) {
+    public ResponseEntity deleteProduct(@PathVariable("productId") UUID productId) {
         productService.deleteProductById(productId);
+        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
     }
 
 }
