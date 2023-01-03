@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -36,4 +38,6 @@ public class ProductResponse {
     private BigDecimal price;
     @Positive
     private Integer quantity;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate myLocalDate;
 }
