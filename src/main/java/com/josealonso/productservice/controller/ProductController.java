@@ -1,15 +1,9 @@
 package com.josealonso.productservice.controller;
 
 import com.josealonso.productservice.dto.ProductDto;
-import com.josealonso.productservice.dto.ProductRequest;
-import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.service.ProductService;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +19,7 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductService productService;
+    private ProductDto productDto;
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductDto>> getAllProducts() {
@@ -37,12 +32,13 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity createProduct(@Valid @NotNull @RequestBody ProductDto productDto) {
-        return new ResponseEntity<>(productService.createProduct(productDto), HttpStatus.CREATED);
+    // public ResponseEntity<ProductDto> createProduct(@Valid @NotNull @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> createProduct(@NotNull @RequestBody ProductDto productDto) {
+        return new ResponseEntity<ProductDto>(productService.createProduct(productDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity updateProduct(@PathVariable("productId") UUID productId, @Valid @RequestBody ProductDto productDto) {
+    public ResponseEntity updateProduct(@PathVariable("productId") UUID productId, @RequestBody ProductDto productDto) {
         return new ResponseEntity<>(productService.updateProductById(productId, productDto), HttpStatus.NO_CONTENT);
     }
 
@@ -50,7 +46,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity deleteProduct(@PathVariable("productId") UUID productId) {
         productService.deleteProductById(productId);
-        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

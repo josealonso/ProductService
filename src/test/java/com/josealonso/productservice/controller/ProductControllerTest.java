@@ -1,16 +1,13 @@
 package com.josealonso.productservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.josealonso.productservice.domain.Product;
+import com.josealonso.productservice.dto.ProductDto;
 import com.josealonso.productservice.dto.ProductRequest;
 import com.josealonso.productservice.dto.ProductResponse;
 import com.josealonso.productservice.repository.ProductRepository;
 import com.josealonso.productservice.service.ProductService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-// import org.junit.platform.commons.util.StringUtils;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,17 +17,17 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-// import static jdk.internal.org.jline.keymap.KeyMap.key;
-// import static java.util.TreeMap.key;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -48,7 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductControllerTest {
 
     static final String PRODUCT_ID = "a15d1a05-ff1a-4cc9-ac95-864fd820e530";
-    static ProductResponse productResponse;
     final String ENDPOINT = "/api/v1/product";
     @Autowired
     MockMvc mockMvc;
@@ -61,21 +57,9 @@ class ProductControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @BeforeAll
-    static void setup() {
-        productResponse = ProductResponse.builder()
-                .id(UUID.fromString(PRODUCT_ID))
-                .name("pencil")
-                .style("School Material")
-                .upc(24536L)
-                .price(BigDecimal.valueOf(200))
-                .build();
-    }
-
     @Test
     void getAllProducts() throws Exception {
-        Mockito.when(productService.getAllProducts()).thenReturn(List.of(productResponse));
-        given(productRepository.findAll()).willReturn(List.of(getValidProduct()));
+        given(productService.getAllProducts()).willReturn(List.of(getValidProductDto()));
 
         mockMvc.perform(get(ENDPOINT + "/products")
                         .accept(MediaType.APPLICATION_JSON))
@@ -84,14 +68,13 @@ class ProductControllerTest {
 
     @Test
     void getProductById() throws Exception {
-        Mockito.when(productService.getProductById(UUID.fromString(PRODUCT_ID))).thenReturn(productResponse);
-        given(productRepository.findById(any())).willReturn(Optional.of(getValidProduct()));
+        given(productService.getProductById(any())).willReturn(getValidProductDto());
 
         mockMvc.perform(get(ENDPOINT + "/{productId}", PRODUCT_ID)
                         .param("isInDiscount", "yes")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("v1/product",
+                .andDo(document("v1/product-get",
                         pathParameters(
                                 parameterWithName("productId").description("UUID of the desired product to get.")
                         ),
@@ -113,10 +96,10 @@ class ProductControllerTest {
 
     @Test
     void createProduct() throws Exception {
-        ProductResponse newProduct = getValidProductResponse();
+        ProductDto newProduct = getValidProductDto();
         String newProductInJson = objectMapper.writeValueAsString(newProduct);
-        // Mockito.when(productService.createProduct(newProduct)).thenReturn(newProduct);
-        // given(productRepository.save(new Product())).willReturn(new Product());
+
+        given(productService.createProduct(any())).willReturn(getValidProductDto());
 
         ConstrainedFields fields = new ConstrainedFields(ProductResponse.class);
 
@@ -124,7 +107,7 @@ class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newProductInJson))
                 .andExpect(status().isCreated())
-                .andDo(document("v1/product",
+                .andDo(document("v1/product-new",
                         requestFields(
                                 fields.withPath("id").ignored(),
                                 fields.withPath("version").ignored(),
@@ -140,10 +123,10 @@ class ProductControllerTest {
 
     @Test
     void updateProductById() throws Exception {
-        ProductResponse updatedProduct = getValidProductResponse();
+        ProductDto updatedProduct = getValidProductDto();
         String updatedProductInJson = objectMapper.writeValueAsString(updatedProduct);
-        /*Mockito.when(productService.updateProductById(updatedProduct.getId(), convertToProductRequest(updatedProduct))
-                .thenReturn();*/
+
+        given(productService.updateProductById(any(), any())).willReturn(getValidProductDto());
 
         mockMvc.perform(put(ENDPOINT + "/" + PRODUCT_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -162,9 +145,12 @@ class ProductControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    ProductResponse getValidProductResponse() {
-        return ProductResponse.builder()
+    ProductDto getValidProductDto() {
+        return ProductDto.builder()
                 .id(UUID.fromString(PRODUCT_ID))
+                .createdDate(OffsetDateTime.of(LocalDate.now(), LocalTime.NOON, ZoneOffset.UTC))
+                .lastModifiedDate(OffsetDateTime.of(LocalDate.now(), LocalTime.NOON, ZoneOffset.UTC))
+                .version(1)
                 .name("My product")
                 .style("Book")
                 .price(new BigDecimal("2.99"))
@@ -173,31 +159,6 @@ class ProductControllerTest {
                 .build();
     }
 
-    ProductRequest getValidProductRequest() {
-        return ProductRequest.builder()
-                .name("My product")
-                .style("Book")
-                .price(new BigDecimal("2.99"))
-                .upc(123123123L)
-                .build();
-    }
-
-    Product getValidProduct() {
-        return Product.builder()
-                .id(UUID.fromString(PRODUCT_ID))
-                //.style("Book")
-                .price(new BigDecimal("2.99"))
-                .upc(123123123L)
-                .build();
-    }
-
-    ProductRequest convertToProductRequest(ProductResponse productResponse) {
-        return ProductRequest.builder()
-                .name(productResponse.getName())
-                .style(productResponse.getStyle())
-                .price(productResponse.getPrice())
-                .build();
-    }
 
     private static class ConstrainedFields {
 
@@ -214,3 +175,4 @@ class ProductControllerTest {
         }
     }
 }
+
