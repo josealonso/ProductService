@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 @Component
 public class ProductLoader implements CommandLineRunner {
 
+    public static final String PRODUCT_1_UPC = "063101000136";
+    public static final String PRODUCT_2_UPC = "063101000138";
+    public static final String PRODUCT_3_UPC = "008101000134";
     private final ProductRepository productRepository;
 
     public ProductLoader(ProductRepository productRepository) {
@@ -28,7 +31,7 @@ public class ProductLoader implements CommandLineRunner {
                     .productName("Product one")
                     .productStyle("IPA")
                     .quantity(200)
-                    .upc(337010001L)
+                    .upc(PRODUCT_1_UPC)
                     .price(new BigDecimal(12.95))
                     .build());
 
@@ -36,8 +39,16 @@ public class ProductLoader implements CommandLineRunner {
                     .productName("Product two")
                     .productStyle("IPB")
                     .quantity(200)
-                    .upc(337010002L)
+                    .upc(PRODUCT_2_UPC)
                     .price(new BigDecimal(11.95))
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .productName("Product three")
+                    .productStyle("IPB")
+                    .quantity(200)
+                    .upc(PRODUCT_3_UPC)
+                    .price(new BigDecimal(14.95))
                     .build());
         }
 

@@ -39,7 +39,7 @@ public class Product {
     private String productName;
     private String productStyle;
     @Column(unique = true)
-    private Long upc;
+    private String upc;
     private BigDecimal price;
     private Integer quantity;
 }

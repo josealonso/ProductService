@@ -33,9 +33,8 @@ public class ProductDto {
     private String name;
     @NotNull
     private String style;
-    @Positive
     @NotNull
-    private Long upc;
+    private String upc;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Positive
     @NotNull

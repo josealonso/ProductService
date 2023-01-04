@@ -1,6 +1,7 @@
 package com.josealonso.productservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.josealonso.productservice.bootstrap.ProductLoader;
 import com.josealonso.productservice.dto.ProductDto;
 import com.josealonso.productservice.dto.ProductRequest;
 import com.josealonso.productservice.dto.ProductResponse;
@@ -154,7 +155,7 @@ class ProductControllerTest {
                 .name("My product")
                 .style("Book")
                 .price(new BigDecimal("2.99"))
-                .upc(123123123L)
+                .upc(ProductLoader.PRODUCT_1_UPC)
                 .quantity(23)
                 .build();
     }
